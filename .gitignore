@@ -28,6 +28,10 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+.pytest_cache/
+
+# Generated reports (regenerable via scripts/generate_report.py)
+reports/
 
 # Env / secrets
 .env

@@ -11,8 +11,7 @@ from pathlib import Path
 import yaml
 
 DEFAULT_CONFIG = Path(__file__).resolve().parent.parent / "configs" / "model.yaml"
-# Optional argument checks another config, e.g. configs/model_loop_6x2.yaml.
-CONFIG_PATH = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_CONFIG
+CONFIG_PATH = DEFAULT_CONFIG
 
 
 def count_params(cfg: dict) -> dict:
@@ -50,8 +49,8 @@ def count_params(cfg: dict) -> dict:
     }
 
 
-def main() -> int:
-    with open(CONFIG_PATH, "r", encoding="utf-8") as f:
+def main(config_path: Path = CONFIG_PATH) -> int:
+    with open(config_path, "r", encoding="utf-8") as f:
         cfg = yaml.safe_load(f)["model"]
 
     if cfg["d_head"] * cfg["n_head"] != cfg["d_model"]:
@@ -78,9 +77,10 @@ def main() -> int:
         print(f"\nFAIL: parameter count mismatch ({actual:,} != {expected:,})")
         return 1
 
-    print(f"\nOK: parameter count matches {CONFIG_PATH.name} declaration.")
+    print(f"\nOK: parameter count matches {config_path.name} declaration.")
     return 0
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    requested = Path(sys.argv[1]) if len(sys.argv) > 1 else CONFIG_PATH
+    sys.exit(main(requested))
